@@ -20,7 +20,8 @@ if "historico" not in st.session_state:
     st.session_state.historico = []
 if "sessionId" not in st.session_state:
     st.session_state.sessionId = None
-
+if "lead_resultado" not in st.session_state:
+    st.session_state.lead_resultado = None
 
 # FUNÇÕES
 
@@ -51,6 +52,19 @@ def resetarConversa():
     st.session_state.historico = []
     st.session_state.sessionId = None
 
+def encerrarAtendimento() -> dict:
+    """envia a conversa para análise e salva o lead no sheets"""
+    if not st.session_state.sessionId:
+        return None
+    try:
+        r = requests.post(
+            f"{API_URL}/leads/{st.session_state.sessionId}",
+            timeout=120,
+        )
+        return r.json()
+    except Exception as e:
+        return {f"Erro": str(e)}
+
 #INTERFACE
 st.title("Assistente Revemar - Revemarzinho")
 st.caption("Assistente virtual das empresas Revemar - Atendimento Inteligente 24horas")
@@ -67,12 +81,19 @@ with chatArea:
             st.markdown(msg["content"])
 
 # Input + botão reset
-colInput, colReset = st.columns([5, 1])
-with colInput:
+col_input, col_reset, col_encerrar = st.columns([4, 1, 1])
+with col_input:
     userInput = st.chat_input("Digite sua mensagem...")
-with colReset:
-    if st.button("Resetar", use_container_width=True):
+with col_reset:
+    if st.button("🔄", use_container_width=True, help="Resetar conversa"):
         resetarConversa()
+        st.session_state.lead_resultado = None
+        st.rerun()
+with col_encerrar:
+    if st.button("✅", use_container_width=True, help="Encerrar e salvar lead"):
+        with st.spinner("Analisando conversa..."):
+            resultado = encerrarAtendimento()
+        st.session_state.lead_resultado = resultado
         st.rerun()
 
 #Processa imagem
@@ -84,6 +105,27 @@ if userInput:
 
     st.session_state.historico.append({"role": "assistant", "content": resposta})
     st.rerun()
+
+# Exibe card do lead quando análise for concluída
+if st.session_state.lead_resultado:
+    r = st.session_state.lead_resultado
+    score = r.get("score", "frio")
+
+    # Cor do card muda conforme o score
+    cor = {"quente": "🔴", "morno": "🟡", "frio": "🔵"}.get(score, "⚪")
+
+    st.divider()
+    st.subheader(f"{cor} Lead Qualificado — Score: **{score.upper()}**")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Nome", r.get("nome") or "Não informado")
+        st.metric("Interesse", r.get("interesse") or "—")
+    with col2:
+        st.metric("Telefone", r.get("telefone") or "Não informado")
+        st.metric("Planilha", "✅ Salvo" if r.get("salvo_planilha") else "❌ Erro")
+
+    st.info(f"📋 **Resumo:** {r.get('resumo', '')}")
 
 # Painel de debug
 with st.expander("Sessão"):

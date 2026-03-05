@@ -8,6 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from contextlib import asynccontextmanager
+from app.lead_scorer import analisarLead
+from app.sheets import salvarLead
 import uuid
 
 from app.chat import criar_chain, chat
@@ -51,6 +53,14 @@ class ChatResponse(BaseModel):
     resposta: str
     sessionId: str
 
+class LeadResponse(BaseModel):
+    score: str
+    nome: Optional[str]
+    telefone: Optional[str]
+    interesse: Optional[str]
+    resumo: str
+    salvo_planilha: bool
+
 #ENDPOINTS
 
 @app.get("/")
@@ -75,6 +85,28 @@ def endpoint_chat(request: chatRequest):
         return ChatResponse(resposta=resposta, sessionId=sessionId)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/leads/{sessionId}", response_model=LeadResponse)
+def endpoint_lead(sessionId: str):
+    """
+    Analisa a conversa de uma sessão e salva o lead no Google Sheets.
+    Chamado pelo Streamlit quando o usuário clica em 'Encerrar Atendimento'.
+    """
+    if sessionId not in sessoes:
+        raise HTTPException(status_code=404, detail= "Sessão não encontrada")
+
+    chain = sessoes[sessionId]
+    dados = analisarLead(chain)
+    salvo = salvarLead(dados, sessionId)
+
+    return LeadResponse(
+        score=dados["score"],
+        nome=dados["nome"],
+        telefone=dados["telefone"],
+        interesse=dados["interesse"],
+        resumo=dados["resumo"],
+        salvo_planilha=salvo
+    )
 
 @app.delete("/chat/{sessionId}")
 def resetarSessao(sessionId: str):
