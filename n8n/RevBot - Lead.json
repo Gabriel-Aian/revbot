@@ -1,0 +1,116 @@
+{
+  "name": "RevBot - Lead",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-recebido",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "54cb09e8-d683-4e60-a21c-88ea558704ee",
+      "name": "Webhook",
+      "webhookId": "fee19521-61b4-428b-a4d0-132529787775"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6135d684-0ec9-408f-87d2-b7328cdb6373",
+              "leftValue": "={{ $json.body.score }}",
+              "rightValue": "quente",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ccfe63e3-5745-416c-ae29-71139c242965",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "fromEmail": "gabrielaian.bcc@gmail.com",
+        "toEmail": "gabrielaian.bcc@gmail.com",
+        "subject": "=LEAD QUENTE —  {{ $json.body.nome }}",
+        "html": "=<h2>🔴 Novo Lead Quente — Revemar</h2>\n\n<table style=\"border-collapse: collapse; width: 100%;\">\n  <tr>\n    <td style=\"padding: 8px; background: #f0f0f0;\"><strong>Nome</strong></td>\n    <td style=\"padding: 8px;\">{{ $json.body.nome }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; background: #f0f0f0;\"><strong>Telefone</strong></td>\n    <td style=\"padding: 8px;\">{{ $json.body.telefone }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; background: #f0f0f0;\"><strong>Interesse</strong></td>\n    <td style=\"padding: 8px;\">{{ $json.body.interesse }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; background: #f0f0f0;\"><strong>Score</strong></td>\n    <td style=\"padding: 8px; color: red;\"><strong>QUENTE 🔴</strong></td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; background: #f0f0f0;\"><strong>Resumo</strong></td>\n    <td style=\"padding: 8px;\">{{ $json.body.resumo }}</td>\n  </tr>\n</table>\n\n<p style=\"margin-top: 20px; color: #666;\">\n  Atendimento registrado pelo RevBot — Sistema de IA Revemar\n</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "0a100057-6d14-4219-9d3f-b9085274b1e4",
+      "name": "Send an Email",
+      "webhookId": "5c25b083-2b17-44c3-afb7-7a504aa0d326",
+      "credentials": {
+        "smtp": {
+          "id": "PitgFRJaY0xjdafT",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "427a0906-30bb-43ac-aafb-d1b4420904ae",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4aae820e73f815a2d1fa157a30302a07d45f290403a345e842533d601cffbd70"
+  },
+  "id": "vxo43uFAJzvnihWF",
+  "tags": []
+}

@@ -1,0 +1,72 @@
+{
+  "name": "RevBot - Agendamento",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agendamento",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7b464518-bcab-48bf-9c46-89c7837c6dd4",
+      "name": "Webhook",
+      "webhookId": "f8972862-871e-4720-88ef-317c7fa7d354"
+    },
+    {
+      "parameters": {
+        "fromEmail": "gabrielaian.bcc@gmail.com",
+        "toEmail": "gabrielaian.bcc@gmail.com",
+        "subject": "AGENDAMENTO CONFIRMADO - Revemar",
+        "html": "=<h2>✅ Agendamento Confirmado — Revemar</h2>\n\n<p>Olá, <strong>{{ $json.body.nome }}</strong>!</p>\n<p>Seu agendamento foi registrado com sucesso.</p>\n\n<table style=\"border-collapse: collapse; width: 100%;\">\n  <tr>\n    <td style=\"padding: 8px; background: #f0f0f0;\"><strong>Serviço</strong></td>\n    <td style=\"padding: 8px;\">{{ $json.body.servico }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; background: #f0f0f0;\"><strong>Veículo</strong></td>\n    <td style=\"padding: 8px;\">{{ $json.body.modelo }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; background: #f0f0f0;\"><strong>Data/Horário</strong></td>\n    <td style=\"padding: 8px;\">{{ $json.body.data_horario }}</td>\n  </tr>\n</table>\n\n<p style=\"margin-top: 20px;\">Em caso de dúvidas, entre em contato com nossa equipe.</p>\n<p><strong>Equipe Revemar</strong></p>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "950703ba-fd8e-40fb-8109-6fd4da2785d8",
+      "name": "Send an Email",
+      "webhookId": "9a4424fc-57fc-4531-b3d4-2744314052ee",
+      "credentials": {
+        "smtp": {
+          "id": "PitgFRJaY0xjdafT",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7e16db42-3425-42fe-bc38-b050ff173950",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4aae820e73f815a2d1fa157a30302a07d45f290403a345e842533d601cffbd70"
+  },
+  "id": "6lshE8fDbD17RJ1e",
+  "tags": []
+}
