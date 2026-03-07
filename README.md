@@ -67,5 +67,5 @@ revbot/
 - [x] **Dia 1** — Chatbot IA + Backend FastAPI + Interface Streamlit ✅
 - [x] **Dia 2** — Qualificação de leads com IA + Google Sheets ✅
 - [x] **Dia 3** — Workflows N8N: notificação de lead quente + confirmação de agendamento ✅
-- [ ] **Dia 4** — Relatório Python + Testes Selenium
+- [x] **Dia 4** — Relatório pandas + Testes E2E Selenium ✅
 - [ ] **Dia 5** — Deploy AWS + Documentação final
