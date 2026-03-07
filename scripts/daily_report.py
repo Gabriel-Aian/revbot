@@ -4,14 +4,16 @@ Lê os dados do Google Sheets, calcula KPIs com pandas
 e exporta relatório em CSV e HTML.
 """
 
-import pandas as pd
-from datetime import datetime
+
 import os
 import sys
-from app.sheets import listarLeads
 
 # Adiciona a raiz do projeto ao path para importar app.sheets
 sys.path.append(os.path.dirname((os.path.dirname(os.path.abspath(__file__)))))
+
+from app.sheets import listarLeads
+import pandas as pd
+from datetime import datetime
 
 def gerar_relatorio():
     """
@@ -32,18 +34,22 @@ def gerar_relatorio():
     df = pd.DataFrame(leads)
     print(f"{len(df)} leads carregados")
 
+    # DEBUG
+    print("Exemplo de timestamp na planilha:", df["timestamp"].iloc[0])
+    print("Tipo:", type(df["timestamp"].iloc[0]))
+
 
     #LIMPEZA E TIPAGEM
     # Converte timestamp para datetime para filtros por data
-    df["timestamp"] = pd.to_datetime(df["timestamp"], format="%d/%m/%y %H/%M/%S", errors="coerce")
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="%d/%m/%Y %H:%M:%S", errors="coerce")
     df["score"] = df["score"].str.lower().str.strip()
     df["interesse"] = df["interesse"].str.lower().str.strip()
 
     #KPIs GERAIS
     total_leads = len(df)
-    leads_quentes = len(df[df["score"]] == "quente")
-    leads_mornos = len(df[df["score"]] == "morno")
-    leads_frios = len(df[df["score"]] == "frio")
+    leads_quentes = len(df[df["score"] == "quente"])
+    leads_mornos = len(df[df["score"] == "morno"])
+    leads_frios = len(df[df["score"] == "frio"])
     taxa_quentes = round((leads_quentes / total_leads) *100, 1) if total_leads > 0 else 0
 
     #Leads de hoje
@@ -62,15 +68,19 @@ def gerar_relatorio():
     print("\n" + "=" *50)
     print("     RELATÓRIO DE LEADS - REVEMAR")
     print("="*50)
-    print(f"Data da geração     : {datetime.now().strftime('%d/%m/%Y $H/%M')}")
+    print(f"Data da geração     : {datetime.now().strftime('%d/%m/%Y %H:%M')}")
     print(f"Total de leads      : {total_leads}")
-    print(f"Leads de hoje       : {leads_mornos}")
-    print(f"Leads quentes       : {leads_quentes}")
+    print(f"Leads de hoje       : {leads_hoje}")
+    print(f"Leads quentes       : {leads_quentes}({taxa_quentes}%)")
     print(f"Leads mornos        : {leads_mornos}")
     print(f"Leads frios         : {leads_frios}")
     print("\n Por interesse:")
     for interesse, qtd in por_interesse.items():
         print(f"    {interesse:<20} {qtd}")
+    print("\n  Por score:")
+    for score, qtd in por_score.items():
+        print(f"    {score:<20} {qtd}")
+    print("=" * 50 + "\n")
 
 
     #EXPORTAR CSV
@@ -186,7 +196,7 @@ def gerar_relatorio():
     </body>
     </html>"""
 
-    with open(html_path, "w", encoding="utf-9") as f:
+    with open(html_path, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"Html exportado: {html_path}")
     print("\nRelatório gerado com sucesso")
