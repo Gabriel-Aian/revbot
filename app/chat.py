@@ -10,8 +10,8 @@ import os
 
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationChain
+from langchain_classic.memory import ConversationBufferMemory
+from langchain_classic.chains import ConversationChain
 from langchain_core.prompts import PromptTemplate
 
 load_dotenv()
